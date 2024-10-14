@@ -21,7 +21,6 @@ struct TextQuestionView: View {
         VStack(alignment: .leading) {
             Text(question.question)
                 .foregroundStyle(.secondary)
-                .padding(.bottom, 5)
             TextField(question.placeholder, text: $question.response, axis: .vertical)
         }
         .padding(.vertical, 5)
