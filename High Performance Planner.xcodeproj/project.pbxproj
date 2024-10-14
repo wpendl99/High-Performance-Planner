@@ -29,9 +29,23 @@
 		E41F8B0F2CBA05830003E8DD /* High Performance PlannerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "High Performance PlannerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E41F8B722CBD9C080003E8DD /* Exceptions for "High Performance Planner" folder in "High Performance PlannerUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				View/High_Performance_PlannerApp.swift,
+				View/PlannerView.swift,
+			);
+			target = E41F8B0E2CBA05830003E8DD /* High Performance PlannerUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		E41F8AF72CBA05820003E8DD /* High Performance Planner */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E41F8B722CBD9C080003E8DD /* Exceptions for "High Performance Planner" folder in "High Performance PlannerUITests" target */,
+			);
 			path = "High Performance Planner";
 			sourceTree = "<group>";
 		};

@@ -11,7 +11,7 @@ import SwiftUI
 struct High_Performance_PlannerApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            PlannerView()
         }
     }
 }
