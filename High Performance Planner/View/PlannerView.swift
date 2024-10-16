@@ -24,6 +24,11 @@ struct PlannerView: View {
         TextQuestion(question: "What can I look forward to today?", placeholder: "I am looking forward to..."),
         TextQuestion(question: "Something I am thankful for today?", placeholder: "I am thankful for...")
     ]
+    @State private var completedTasks: [Task] = []
+    @State private var workTasks: [Task] = [
+        Task(description: "Finish IS 581 job description homework"),
+        Task(description: "Send email to job applicants")
+    ]
     
     @State private var dummy: String = ""
     
@@ -45,9 +50,7 @@ struct PlannerView: View {
     }
     
     var todoSeciton: some View {
-        Section(header: Text("Daily Todos")) {
-            TextField("Second name:", text: $dummy)
-        }
+        TaskSectionView(header: "Today's Todos",completedTasks: $completedTasks, tasks: $workTasks)
     }
     
     var reviewSection: some View {

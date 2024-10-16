@@ -35,6 +35,7 @@
 			membershipExceptions = (
 				View/High_Performance_PlannerApp.swift,
 				View/PlannerView.swift,
+				View/TaskSectionView.swift,
 			);
 			target = E41F8B0E2CBA05830003E8DD /* High Performance PlannerUITests */;
 		};
