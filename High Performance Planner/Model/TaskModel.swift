@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Task: Identifiable, Codable {
+protocol Task: Identifiable, Codable, Equatable {
     var id: UUID { get set }
     var description: String { get set }
     var notes: String? { get set }
