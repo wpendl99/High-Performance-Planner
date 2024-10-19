@@ -27,7 +27,7 @@ struct DailyTask: Task {
     var isCompleted: Bool
     var completionDate: Date?
     var dueDate: Date?
-    var category: TodoCategory?
+    var category: TaskCategory?
 }
 
 struct OnMyMindTask: Identifiable {
