@@ -7,11 +7,6 @@
 
 import Foundation
 
-enum TaskType: String, Codable {
-    case todo
-    case reminder
-}
-
 protocol Task: Identifiable {
     var id: UUID { get set }
     var description: String { get set }
