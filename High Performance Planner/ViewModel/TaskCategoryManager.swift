@@ -9,16 +9,16 @@ import Foundation
 
 class TaskCategoryManager: ObservableObject {
     private var taskCategories: [TaskCategory] = []
-    private let categoriesFileURL: URL
+    private let categoriesFile: URL
     
-    init(categoriesFileURL: URL) {
-        self.categoriesFileURL = categoriesFileURL
+    init(categoriesFile: URL) {
+        self.categoriesFile = categoriesFile
         loadCategories()
     }
     
 //    Load categories from the file
     private func loadCategories() {
-        guard let data = try? Data(contentsOf: categoriesFileURL) else { return }
+        guard let data = try? Data(contentsOf: categoriesFile) else { return }
         let decoder = JSONDecoder()
         if let categories = try? decoder.decode([TaskCategory].self, from: data) {
             taskCategories = categories
@@ -31,7 +31,7 @@ class TaskCategoryManager: ObservableObject {
     private func saveCategories() {
         let encoder = JSONEncoder()
         if let data = try? encoder.encode(taskCategories) {
-            try? data.write(to: categoriesFileURL)
+            try? data.write(to: categoriesFile)
         }
     }
     

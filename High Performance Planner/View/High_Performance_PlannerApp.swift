@@ -11,7 +11,8 @@ import SwiftUI
 struct High_Performance_PlannerApp: App {
     
     // Shared instance objects
-    @StateObject private var taskCategoryManager = TaskCategoryManager(categoriesFileURL: Constants.taskCategoryFileURL)
+    @StateObject private var taskCategoryManager = TaskCategoryManager(categoriesFile: Constants.taskCategoryFileURL)
+    @StateObject private var dailyQuestionManager = DailyQuestionManager(reflectionQuestionsFile: Constants.reflectionQuestionsFileURL, reviewQuestionsFile: Constants.reviewQuestionsFileURL)
     
     var body: some Scene {
         WindowGroup {
@@ -21,10 +22,17 @@ struct High_Performance_PlannerApp: App {
     
     struct Constants {
         static let taskCategoryFileName: String = "taskCategories.json"
-        static let taskCategoryFileURL: URL = {
+        static let reflectionQuestion: String = "reflectionQuestion.json"
+        static let reviewQuestion: String = "reviewQuestion.json"
+        
+        static let taskCategoryFileURL: URL = getURLFrom(filename: taskCategoryFileName)
+        static let reflectionQuestionsFileURL: URL = getURLFrom(filename: reflectionQuestion)
+        static let reviewQuestionsFileURL: URL = getURLFrom(filename: reviewQuestion)
+        
+        static private func getURLFrom(filename: String) -> URL {
             let fileManager = FileManager.default
             let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-            return documentsDirectory.appendingPathComponent(taskCategoryFileName)
-        }()
+            return documentsDirectory.appendingPathComponent(filename)
+        }
     }
 }
