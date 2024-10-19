@@ -25,8 +25,8 @@ struct DailyTask: Task {
     var category: TaskCategory?
 }
 
-struct OnMyMindTask: Identifiable {
-    let id: UUID = UUID()
+struct OnMyMindTask: Task {
+    var id: UUID = UUID()
     var description: String
     var notes: String?
     var isCompleted: Bool = false

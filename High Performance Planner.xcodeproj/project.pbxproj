@@ -33,6 +33,7 @@
 		E41F8B722CBD9C080003E8DD /* Exceptions for "High Performance Planner" folder in "High Performance PlannerUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				View/CategoryDot.swift,
 				View/High_Performance_PlannerApp.swift,
 				View/PlannerView.swift,
 				View/TaskSectionView.swift,
