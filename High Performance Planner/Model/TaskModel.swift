@@ -19,7 +19,7 @@ struct DailyTask: Task {
     var id: UUID = UUID()
     var description: String
     var notes: String?
-    var isCompleted: Bool
+    var isCompleted: Bool = false
     var completionDate: Date?
     var dueDate: Date?
     var category: TaskCategory?
