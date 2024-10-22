@@ -22,7 +22,17 @@ struct DailyTask: Task {
     var isCompleted: Bool = false
     var completionDate: Date?
     var dueDate: Date?
-    var category: TaskCategory?
+    var category: TaskCategory
+    
+    init(_ description: String, category: TaskCategory){
+        self.id = UUID()
+        self.description = description
+        self.notes = nil
+        self.isCompleted = false
+        self.completionDate = nil
+        self.dueDate = nil
+        self.category = category
+    }
     
     init(from task: any Task, dueDate: Date, category: TaskCategory){
         self.id = task.id

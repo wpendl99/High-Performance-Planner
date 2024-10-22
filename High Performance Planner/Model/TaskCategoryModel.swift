@@ -12,4 +12,15 @@ struct TaskCategory: Identifiable, Codable, Equatable {
     var id: UUID = UUID()
     var name: String
     var colorHex: String
+    
+    init(name: String, colorHex: String) {
+        self.name = name
+        self.colorHex = colorHex
+    }
+    
+    init(from task: EditableTaskCategory) {
+        id = task.category.id
+        name = task.category.name
+        colorHex = task.category.colorHex
+    }
 }

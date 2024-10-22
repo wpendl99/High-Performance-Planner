@@ -41,8 +41,10 @@ struct PlannerView: View {
     }
     
     var todoSeciton: some View {
-        Text("Todo Section")
-//        TaskSectionView(header: "Today's Todos", tasks: workTasks)
+        TaskSectionView(
+            header: "Today's Todos",
+            plannerManager: plannerManager,
+            tasks: plannerManager.binding(for: \.tasks))
     }
     
     var reviewSection: some View {

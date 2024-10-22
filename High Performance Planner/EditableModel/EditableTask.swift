@@ -13,13 +13,4 @@ class EditableTask<T: Task>: ObservableObject, Identifiable {
     init(task: T) {
         self.task = task
     }
-    
-    func toggleCompletion() {
-        task.isCompleted.toggle()
-        if task.isCompleted {
-            task.completionDate = Date()
-        } else {
-            task.completionDate = nil
-        }
-    }
 }
