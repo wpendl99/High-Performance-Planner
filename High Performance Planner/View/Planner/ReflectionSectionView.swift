@@ -7,37 +7,30 @@
 
 import SwiftUI
 
-struct TextQuestion: Identifiable {
-    let id: UUID = UUID()
-    let question: String
-    let placeholder: String
-    var response: String = ""  // Adding default value
-}
-
-struct TextQuestionView: View {
-    @Binding var question: TextQuestion
+struct ReflectionQuestionView: View {
+    @Binding var question: EditableQuestion<ReflectionQuestion>
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text(question.question)
+            Text(question.question.question)
                 .foregroundStyle(.secondary)
-            TextField(question.placeholder, text: $question.response, axis: .vertical)
+            TextField(question.question.placeholder, text: $question.question.answer, axis: .vertical)
         }
         .padding(.vertical, 5)
     }
 }
 
-struct TextSectionView: View {
+struct ReflectionSectionView: View {
     var header: String
-    @Binding var questions: [TextQuestion]  // Binding to modify the questions array
+    @Binding var questions: [EditableQuestion<ReflectionQuestion>]
     
     var body: some View {
         Section(header: Text(header)) {
             VStack(alignment: .leading) {
                 ForEach(questions.indices, id:\.self) { index in
-                    TextQuestionView(question: $questions[index])
+                    ReflectionQuestionView(question: $questions[index])
                     
-//                    Add a divider unless it's the last item
+                    // Add a divider unless it's the last item
                     if index < questions.count - 1 {
                         Divider()
                     }

@@ -23,6 +23,16 @@ struct DailyTask: Task {
     var completionDate: Date?
     var dueDate: Date?
     var category: TaskCategory?
+    
+    init(from task: any Task, dueDate: Date, category: TaskCategory){
+        self.id = task.id
+        self.description = task.description
+        self.notes = task.notes
+        self.isCompleted = task.isCompleted
+        self.completionDate = task.completionDate
+        self.dueDate = dueDate
+        self.category = category
+    }
 }
 
 struct OnMyMindTask: Task {

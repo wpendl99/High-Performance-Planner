@@ -11,28 +11,26 @@ import SwiftUI
 struct High_Performance_PlannerApp: App {
     
     // Shared instance objects
-    @StateObject private var taskCategoryManager = TaskCategoryManager(categoriesFile: Constants.taskCategoryFileURL)
-    @StateObject private var dailyQuestionManager = DailyQuestionManager(reflectionQuestionsFile: Constants.reflectionQuestionsFileURL, reviewQuestionsFile: Constants.reviewQuestionsFileURL)
+    @StateObject private var dataService = FileDataService()
+    @StateObject private var plannerManager = PlannerManager(dataService: FileDataService())
+    
+    @State var selection = 1
     
     var body: some Scene {
         WindowGroup {
-            PlannerView()
-        }
-    }
-    
-    struct Constants {
-        static let taskCategoryFileName: String = "taskCategories.json"
-        static let reflectionQuestion: String = "reflectionQuestion.json"
-        static let reviewQuestion: String = "reviewQuestion.json"
-        
-        static let taskCategoryFileURL: URL = getURLFrom(filename: taskCategoryFileName)
-        static let reflectionQuestionsFileURL: URL = getURLFrom(filename: reflectionQuestion)
-        static let reviewQuestionsFileURL: URL = getURLFrom(filename: reviewQuestion)
-        
-        static private func getURLFrom(filename: String) -> URL {
-            let fileManager = FileManager.default
-            let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-            return documentsDirectory.appendingPathComponent(filename)
+            TabView(selection: $selection) {
+                HistoryView()
+                    .tabItem { Label("History", systemImage: "clock")}
+                    .tag(0)
+                
+                PlannerView(plannerManager: plannerManager)
+                    .tabItem { Label("Planner", systemImage: "list.bullet")}
+                    .tag(1)
+                
+                SettingsView()
+                    .tabItem { Label("Settings", systemImage: "gearshape")}
+                    .tag(2)
+            }
         }
     }
 }

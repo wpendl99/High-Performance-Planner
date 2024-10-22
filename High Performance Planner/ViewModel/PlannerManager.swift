@@ -7,134 +7,107 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 class PlannerManager: ObservableObject {
-    private var dailyPlanner: DailyPlanner
-    private let plannerFile: URL
-    private let dailyQuestionManager: DailyQuestionManager
-    private let taskCategoryManager: TaskCategoryManager
+    @Published var planner: EditablePlanner?
+    @Published var onMyMindTasks: [EditableTask<OnMyMindTask>] = []
+    private let dataService: any DataService
     
-    init(plannerFile: URL, dailyQuestionManager: DailyQuestionManager, taskCategoryManager: TaskCategoryManager) {
-        self.plannerFile = plannerFile
-        self.dailyQuestionManager = dailyQuestionManager
-        self.taskCategoryManager = taskCategoryManager
-        
-        if let planner = PlannerManager.loadFromFile(plannerFile: plannerFile) {
-            self.dailyPlanner = planner
+    init(dataService: any DataService) {
+        self.dataService = dataService
+    }
+    
+    // MARK: - Planner Management
+    func loadPlanner(for date: Date) {
+        guard planner == nil || planner?.date.startOfDay() != date.startOfDay() else { return }
+        if let planner = dataService.loadPlanner(for: date) {
+            self.planner = EditablePlanner(planner: planner)
         } else {
-            self.dailyPlanner = DailyPlanner(
-                date: Date(),
-                reflectionQuestions: dailyQuestionManager.getReflectionQuestions(),
-                taskCategories: taskCategoryManager.getCategories(),
-                tasks: [],
-                reviewQuestions: dailyQuestionManager.getReviewQuestions()
+            self.planner = EditablePlanner(
+                planner: .init(
+                    date: date,
+                    reflectionQuestions: dataService.loadDefaultReflectionQuestions(),
+                    taskCategories: dataService.loadDefaultTaskCategories(),
+                    tasks: [],
+                    reviewQuestions: dataService.loadDefaultReviewQuestions()
+                )
             )
         }
     }
     
-//    Load Planner from file
-    private static func loadFromFile(plannerFile: URL) -> DailyPlanner? {
-        if let data = try? Data(contentsOf: plannerFile),
-           let planner = try? JSONDecoder().decode(DailyPlanner.self, from: data) {
-            return planner
-        }
-        return nil
+    func savePlanner() {
+        guard let planner else { return }
+        let plannerStruct = planner.toDailyPlanner()
+        dataService.savePlanner(plannerStruct, for: planner.date)
     }
     
-//    Save planner to file
-    private func saveToFile() {
-        if let data = try? JSONEncoder().encode(dailyPlanner) {
-            try? data.write(to: plannerFile)
-        }
+    // MARK: - OnMyMind Tasks Management
+    func loadOnMyMindTasks() {
+        onMyMindTasks = []
+        dataService.loadOnMyMindTasks().forEach { onMyMindTasks.append(EditableTask(task: $0)) }
     }
     
-//    Get functions for each component
-    func getReflectionQuestions() -> [ReflectionQuestion] {
-        dailyPlanner.reflectionQuestions
+    func saveOnMyMindTasks() {
+        dataService.saveOnMyMindTasks(onMyMindTasks.map { $0.task })
     }
     
-    func getTaskCategories() -> [TaskCategory] {
-        dailyPlanner.taskCategories
-    }
-    
-    func getTasks() -> [DailyTask] {
-        dailyPlanner.tasks
-    }
-    
-    func getReviewQuestions() -> [ReviewQuestion] {
-        dailyPlanner.reviewQuestions
-    }
-    
-//    Update functions for each component
-    func updateReflectionQuestion(_ question: ReflectionQuestion) {
-        if let index = dailyPlanner.reflectionQuestions.firstIndex(of: question) {
-            dailyPlanner.reflectionQuestions[index].question = question.question
-        } else {
-            dailyPlanner.reflectionQuestions.append(question)
-        }
-        saveToFile()
-    }
-    
-    func updateReflectionQuestionAnswer(_ question: ReflectionQuestion) {
-        if let index = dailyPlanner.reflectionQuestions.firstIndex(of: question) {
-            dailyPlanner.reflectionQuestions[index].answer = question.answer
-            saveToFile()
+    func updateOnMyMindTask(_ task: OnMyMindTask) {
+        if let index = onMyMindTasks.firstIndex(where: { $0.task.id == task.id }) {
+            onMyMindTasks[index].task = task
+            saveOnMyMindTasks()
         }
     }
     
-    func updateTaskCategories(_ categories: [TaskCategory]) {
-        dailyPlanner.taskCategories = categories
-        saveToFile()
+    func removeOnMyMindTask(_ task: OnMyMindTask) {
+        onMyMindTasks.removeAll { $0.task.id == task.id }
+        saveOnMyMindTasks()
     }
     
-    func updateTask(_ task: DailyTask) {
-        if let index = dailyPlanner.tasks.firstIndex(of: task) {
-            dailyPlanner.tasks[index] = task
-            saveToFile()
+    func completeOnMyMindTask(_ task: OnMyMindTask) {
+        if let index = onMyMindTasks.firstIndex(where: { $0.task.id == task.id }) {
+            onMyMindTasks[index].toggleCompletion()
+            saveOnMyMindTasks()
         }
     }
     
-    func updateTasks(_ tasks: [DailyTask]) {
-        dailyPlanner.tasks = tasks
-        saveToFile()
+    // MARK: - Daily Task Management
+    func addDailyTask(_ task: any Task, category: TaskCategory) {
+        guard let planner else { return }
+        let dueDate = planner.date
+        planner.tasks.append(EditableTask(task: DailyTask(from: task, dueDate: dueDate, category: category)))
     }
     
-    func updateReviewQuestion(_ question: ReviewQuestion) {
-        if let index = dailyPlanner.reviewQuestions.firstIndex(of: question) {
-            dailyPlanner.reviewQuestions[index].question = question.question
-        } else {
-            dailyPlanner.reviewQuestions.append(question)
-        }
-        saveToFile()
-    }
-    
-    func updateReviewQuestionAnswer(_ question: ReviewQuestion) {
-        if let index = dailyPlanner.reviewQuestions.firstIndex(of: question) {
-            dailyPlanner.reviewQuestions[index].notes = question.notes
-            dailyPlanner.reviewQuestions[index].score = question.score
-            saveToFile()
+    func updateDailyTask(_ task: DailyTask) {
+        guard let planner else { return }
+        if let index = planner.tasks.firstIndex(where: { $0.task.id == task.id }) {
+            planner.tasks[index] = EditableTask(task: task)
         }
     }
     
-//    Remove Functions
-    func removeReflectionQuestion(_ question: ReflectionQuestion) {
-        if let index = dailyPlanner.reflectionQuestions.firstIndex(of: question) {
-            dailyPlanner.reflectionQuestions.remove(at: index)
-            saveToFile()
+    func removeDailyTask(_ task: DailyTask) {
+        guard let planner else { return }
+        if let index = planner.tasks.firstIndex(where: { $0.task.id == task.id }) {
+            planner.tasks.remove(at: index)
         }
     }
     
-    func removeTask(_ task: DailyTask) {
-        if let index = dailyPlanner.tasks.firstIndex(of: task) {
-            dailyPlanner.tasks.remove(at: index)
-            saveToFile()
+    func completeDailyTask(_ task: DailyTask) {
+        guard let planner else { return }
+        if let index = planner.tasks.firstIndex(where: { $0.task.id == task.id }) {
+            planner.tasks[index].toggleCompletion()
         }
     }
-    
-    func removeReviewQuestion(_ question: ReviewQuestion) {
-        if let index = dailyPlanner.reviewQuestions.firstIndex(of: question) {
-            dailyPlanner.reviewQuestions.remove(at: index)
-            saveToFile()
-        }
+}
+
+extension PlannerManager {
+    func binding<T>(for keyPath: ReferenceWritableKeyPath<EditablePlanner, [T]>) -> Binding<[T]> {
+        Binding(
+            get: { self.planner?[keyPath: keyPath] ?? [] },
+            set: {
+                self.planner?[keyPath: keyPath] = $0
+                self.savePlanner()
+            }
+        )
     }
 }

@@ -33,10 +33,12 @@
 		E41F8B722CBD9C080003E8DD /* Exceptions for "High Performance Planner" folder in "High Performance PlannerUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				View/CategoryDot.swift,
 				View/High_Performance_PlannerApp.swift,
-				View/PlannerView.swift,
-				View/TaskSectionView.swift,
+				View/History/HistoryView.swift,
+				View/Planner/CategoryDot.swift,
+				View/Planner/PlannerView.swift,
+				View/Planner/TaskSectionView.swift,
+				View/Settings/SettingsView.swift,
 			);
 			target = E41F8B0E2CBA05830003E8DD /* High Performance PlannerUITests */;
 		};
@@ -412,6 +414,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"High Performance Planner/Preview Content\"";
+				DEVELOPMENT_TEAM = X8HW5SNZ96;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -440,6 +443,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"High Performance Planner/Preview Content\"";
+				DEVELOPMENT_TEAM = X8HW5SNZ96;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
