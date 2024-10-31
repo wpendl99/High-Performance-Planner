@@ -17,10 +17,4 @@ struct TaskCategory: Identifiable, Codable, Equatable {
         self.name = name
         self.colorHex = colorHex
     }
-    
-    init(from task: EditableTaskCategory) {
-        id = task.category.id
-        name = task.category.name
-        colorHex = task.category.colorHex
-    }
 }

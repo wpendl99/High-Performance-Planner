@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct ReflectionQuestionView: View {
-    @Binding var question: EditableQuestion<ReflectionQuestion>
+    @Binding var question: ReflectionQuestion
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text(question.question.question)
+            Text(question.question)
                 .foregroundStyle(.secondary)
-            TextField(question.question.placeholder, text: $question.question.answer, axis: .vertical)
+            TextField(question.placeholder, text: $question.answer, axis: .vertical)
         }
         .padding(.vertical, 5)
     }
@@ -22,7 +22,7 @@ struct ReflectionQuestionView: View {
 
 struct ReflectionSectionView: View {
     var header: String
-    @Binding var questions: [EditableQuestion<ReflectionQuestion>]
+    @Binding var questions: [ReflectionQuestion]
     
     var body: some View {
         Section(header: Text(header)) {

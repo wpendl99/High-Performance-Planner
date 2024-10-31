@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Task: Identifiable, Codable, Equatable {
+protocol Todo: Identifiable, Codable, Equatable {
     var id: UUID { get set }
     var description: String { get set }
     var notes: String? { get set }
@@ -15,7 +15,7 @@ protocol Task: Identifiable, Codable, Equatable {
     var completionDate: Date? { get set }
 }
 
-struct DailyTask: Task {
+struct DailyTask: Todo {
     var id: UUID = UUID()
     var description: String
     var notes: String?
@@ -34,7 +34,7 @@ struct DailyTask: Task {
         self.category = category
     }
     
-    init(from task: any Task, dueDate: Date, category: TaskCategory){
+    init(from task: any Todo, dueDate: Date, category: TaskCategory){
         self.id = task.id
         self.description = task.description
         self.notes = task.notes
@@ -45,10 +45,18 @@ struct DailyTask: Task {
     }
 }
 
-struct OnMyMindTask: Task {
+struct OnMyMindTask: Todo {
     var id: UUID = UUID()
     var description: String
     var notes: String?
     var isCompleted: Bool = false
     var completionDate: Date?
+    
+    init(_ description: String){
+        self.id = UUID()
+        self.description = description
+        self.notes = nil
+        self.isCompleted = false
+        self.completionDate = nil
+    }
 }

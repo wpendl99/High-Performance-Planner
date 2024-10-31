@@ -7,61 +7,80 @@
 
 import SwiftUI
 
+enum ViewMode {
+    case mini
+    case full
+    case history
+}
+
 struct PlannerView: View {
+    @StateObject private var viewModel: PlannerViewModel
+    var date: Date
+    var viewMode: ViewMode
     
-    @ObservedObject var plannerManager: PlannerManager
+    var isEditing = true
     
+    init(date: Date, viewMode: ViewMode, isEditing: Bool = true) {
+        self.date = date
+        _viewModel = StateObject(wrappedValue: PlannerViewModel(date: date, viewMode: viewMode))
+        self.viewMode = viewMode
+        self.isEditing = isEditing
+    }
+
     var body: some View {
         NavigationView {
-            if let planner = plannerManager.planner {
-                Form {
-                    reflectionSection
-                    todoSeciton
+            Form {
+                reflectionSection
+                todoSection
+                if viewModel.viewMode == .full {
                     reviewSection
-                    reminderSection
                 }
-                .navigationTitle("\(planner.dateForViews())")
-            } else {
-                Text("Error loading planner...")
+                reminderSection
             }
+            .navigationTitle("\(DateFormatter.dateForTitles(from: viewModel.planner.date))")
         }
         .onTapGesture {
             UIApplication.shared.endEditing(true)
         }
-        .onAppear {
-            plannerManager.loadPlanner(for: .now)
-        }
     }
-    
+
     var reflectionSection: some View {
         ReflectionSectionView(
             header: Constants.reflectionHeader,
-            questions: plannerManager.binding(for: \.reflectionQuestions)
+            questions: viewModel.reflectionQuestionsBinding
         )
     }
-    
-    var todoSeciton: some View {
+
+    var todoSection: some View {
         TaskSectionView(
             header: "Today's Todos",
-            plannerManager: plannerManager,
-            tasks: plannerManager.binding(for: \.tasks))
+            tasks: viewModel.tasksBinding,
+            categories: viewModel.allTaskCategories,
+            updateTaskCategory: viewModel.updateTaskTaskCategory
+        )
     }
-    
+
     var reviewSection: some View {
         Section(header: Text("Daily Review")) {
             Text("Third name:")
         }
     }
-    
+
     var reminderSection: some View {
-        Section(header: Text("Things to keep in mind")) {
-            Text("Fourth name:")
-        }
+        let filteredTasks = viewModel.filteredOnMyMindTasks()
+        return OnMyMindTaskSectionView(
+            header: "Things to keep on mind",
+            tasks: filteredTasks,
+            isEditing: isEditing,
+            addTask: viewModel.addOnMyMindTask,
+            deleteTask: viewModel.removeOnMyMindTask,
+            toggleTaskCompletion: viewModel.toggleOnMyMindTaskCompletion,
+            moveTasks: viewModel.moveOnMyMindTasks
+        )
     }
 }
 
 #Preview {
-    PlannerView(plannerManager: PlannerManager(dataService: FileDataService()))
+    PlannerView(date: .now, viewMode: .full)
 }
-
 

@@ -20,9 +20,15 @@ struct Constants {
         return formatter
     }()
     
+    static let dateFormatterForTitles: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM dd, yyyy"
+        return formatter
+    }()
+    
     static let dateFormatterForViews: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE, MMM d, yyyy"
+        formatter.dateFormat = "EEEE, MMMM dd, yyyy"
         return formatter
     }()
     

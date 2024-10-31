@@ -145,7 +145,7 @@ class FileDataService: DataService {
     }
     
     private func getDocuemntFileURL(for file: String) -> URL {
-        let fileName = "\(file).pdf"
+        let fileName = "\(file).json"
         return documentDirectory.appendingPathComponent(fileName)
     }
 }

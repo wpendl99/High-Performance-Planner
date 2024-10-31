@@ -36,6 +36,7 @@
 				View/High_Performance_PlannerApp.swift,
 				View/History/HistoryView.swift,
 				View/Planner/CategoryDot.swift,
+				View/Planner/OnMyMindTaskSectionView.swift,
 				View/Planner/PlannerView.swift,
 				View/Planner/TaskSectionView.swift,
 				View/Settings/SettingsView.swift,

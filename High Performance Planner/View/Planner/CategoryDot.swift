@@ -8,15 +8,16 @@
 import SwiftUI
 
 struct CategoryDot: View {
-    @ObservedObject var plannerManager: PlannerManager
     @Binding var task: DailyTask
     @Binding var lastCategory: TaskCategory
+    var categories: [TaskCategory]
+    var updateTaskCategory: (DailyTask, TaskCategory) -> Void
     
     var body: some View {
         Menu {
-            ForEach(plannerManager.allTaskCategories()) { category in
+            ForEach(categories) { category in
                 Button(action: {
-                    plannerManager.updateTaskTaskCategory(task, newCategory: category)
+                    updateTaskCategory(task, category)
                     lastCategory = category
                 }) {
                     HStack(spacing: 8) {

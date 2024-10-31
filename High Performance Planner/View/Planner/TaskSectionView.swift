@@ -9,51 +9,48 @@ import SwiftUI
 
 struct TaskSectionView: View {
     private var header: String
-    @ObservedObject var plannerManager: PlannerManager
-    private var tasks: Binding<[EditableTask<DailyTask>]>
+    @Binding private var tasks: [DailyTask]
+    var categories: [TaskCategory]
+    var updateTaskCategory: (DailyTask, TaskCategory) -> Void
     
     @State private var newTaskDescription: String = ""
     @FocusState private var isNewTaskFieldFocused: Bool
     @State private var isEditing = true
-    @State private var lastCategory: TaskCategory
+    @State private var lastCategory: TaskCategory = TaskCategory(name: "Default", colorHex: "#aaaaaa")
     
-    init(header: String, plannerManager: PlannerManager, tasks: Binding<[EditableTask<DailyTask>]>) {
+    init(header: String, tasks: Binding<[DailyTask]>, categories: [TaskCategory], updateTaskCategory: @escaping (DailyTask, TaskCategory) -> Void) {
         self.header = header
-        self.plannerManager = plannerManager
-        self.tasks = tasks
-        self.lastCategory = plannerManager.getFirstTaskCategory()
+        self._tasks = tasks
+        self.categories = categories
+        self.updateTaskCategory = updateTaskCategory
     }
-    
     
     var body: some View {
         Section(header: Text(header)) {
             List {
-                ForEach(tasks) { $task in
+                ForEach(tasks.indices, id: \.self) { index in
                     HStack {
-                        CategoryDot(plannerManager: plannerManager, task: $task.task, lastCategory: $lastCategory)
+                        CategoryDot(task: $tasks[index], lastCategory: $lastCategory, categories: categories, updateTaskCategory: updateTaskCategory)
                         
-                        TextField("Task description", text: $task.task.description)
-                            .strikethrough(task.task.isCompleted, color: .black)
+                        TextField("Task description", text: $tasks[index].description)
+                            .strikethrough(tasks[index].isCompleted, color: .black)
                         Spacer()
                     }
                     .swipeActions(edge: .leading) {
                         Button {
-                            toggleCompleteTask(task)
+                            toggleCompleteTask(at: index)
                         } label: {
-                            Label(task.task.isCompleted ? "Uncomplete" : "Complete", systemImage: task.task.isCompleted ? "xmark" : "checkmark")
+                            Label(tasks[index].isCompleted ? "Uncomplete" : "Complete", systemImage: tasks[index].isCompleted ? "xmark" : "checkmark")
                         }
-                        .tint(task.task.isCompleted ? .orange : .green)
+                        .tint(tasks[index].isCompleted ? .orange : .green)
                     }
                     .swipeActions {
                         Button(role: .destructive) {
-                            deleteTask(task)
+                            deleteTask(at: index)
                         } label: {
                             Label("Delete", systemImage: "trash")
                         }
                     }
-                }
-                .onMove { indices, newOffset in
-                    plannerManager.moveTasks(from: indices, to: newOffset)
                 }
                 
                 if isEditing {
@@ -68,14 +65,17 @@ struct TaskSectionView: View {
             }
             .environment(\.editMode, Binding.constant(EditMode.active))
         }
+        .onAppear {
+            loadLastCategory()
+        }
     }
     
-    func addNewTask() {
+    private func addNewTask() {
         let trimmedDescription = newTaskDescription.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedDescription.isEmpty else { return }
         
         let newTask = DailyTask(trimmedDescription, category: lastCategory)
-        plannerManager.addDailyTask(newTask, category: lastCategory)
+        tasks.append(newTask) // Directly modify tasks binding
         
         // Reset the description after a slight delay to prevent focus issues
         DispatchQueue.main.async {
@@ -83,11 +83,17 @@ struct TaskSectionView: View {
         }
     }
     
-    func deleteTask(_ task: EditableTask<DailyTask>) {
-        plannerManager.removeDailyTask(task.task)
+    private func deleteTask(at index: Int) {
+        tasks.remove(at: index) // Directly modify tasks binding
     }
     
-    func toggleCompleteTask(_ task: EditableTask<DailyTask>) {
-        plannerManager.toggleTaskCompletion(task.task)
+    private func toggleCompleteTask(at index: Int) {
+        tasks[index].isCompleted.toggle() // Toggle completion directly in tasks binding
+    }
+    
+    private func loadLastCategory() {
+        // Here, you could set `lastCategory` based on some external configuration or use a default.
+        // Example default:
+        self.lastCategory = TaskCategory(name: "Default", colorHex: "#aaaaaa")
     }
 }
